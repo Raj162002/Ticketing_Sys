@@ -1,78 +1,54 @@
 package iit.lk.raj.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
+@Data  // Lombok will generate getters, setters, toString, equals, and hashCode methods
+@NoArgsConstructor  // Lombok generates a no-args constructor
 public class Ticket {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ticketId;
-    private String ticketType;
+
+    @Enumerated(EnumType.STRING) // Enum to store ticket types (VIP, Normal, etc.)
+    private TicketType ticketType;
+
     private double ticketPrice;
+
     private Date ticketReleaseDate;
+
     private Date ticketClosingDate;
+
     private int ticketTotal;
+
     private boolean ticketStatus;
 
+    // Many-to-one relationship with Customer (a customer can have many tickets)
+    @ManyToOne
+    @JoinColumn(name = "customer_id")  // Foreign key to Customer
+    private Customer customer;
 
-    public int getTicketTotal() {
-        return ticketTotal;
-    }
-
-    public void setTicketTotal(int ticketTotal) {
-        this.ticketTotal = ticketTotal;
-    }
-
-    public Date getTicketReleaseDate() {
-        return ticketReleaseDate;
-    }
-
-    public void setTicketReleaseDate(Date ticketReleaseDate) {
-        this.ticketReleaseDate = ticketReleaseDate;
-    }
-
-
-    public int getTicketId() {
-        return ticketId;
-    }
-
-    public void setTicketId(int ticketId) {
-        this.ticketId = ticketId;
-    }
-
-    public String getTicketType() {
-        return ticketType;
-    }
-
-    public void setTicketType(String ticketType) {
-        this.ticketType = ticketType;
-    }
-
-    public double getTicketPrice() {
-        return ticketPrice;
-    }
-
-    public void setTicketPrice(double ticketPrice) {
-        this.ticketPrice = ticketPrice;
-    }
-
-    public boolean isTicketStatus() {
-        return ticketStatus;
-    }
-
-    public void setTicketStatus(boolean ticketStatus) {
-        this.ticketStatus = ticketStatus;
-    }
-
-    public Ticket(int ticketId, String ticketType, double ticketPrice) {
-        if(!ticketStatus){
+    // Constructor with ticket type and price
+    public Ticket(String ticketType, double ticketPrice) {
+        if (!ticketStatus) {
             System.out.println("Ticket is not available");
-        }else {
-            this.ticketId = ticketId;
-            this.ticketType = ticketType;
+        } else {
+            this.ticketType = TicketType.valueOf(ticketType.toUpperCase()); // Convert String to Enum
             this.ticketPrice = ticketPrice;
         }
+    }
+
+    // Constructor for full initialization
+    public Ticket(int ticketId, TicketType ticketType, double ticketPrice, int ticketTotal, boolean ticketStatus) {
+        this.ticketId = ticketId;
+        this.ticketType = ticketType;
+        this.ticketPrice = ticketPrice;
+        this.ticketTotal = ticketTotal;
+        this.ticketStatus = ticketStatus;
     }
 }
