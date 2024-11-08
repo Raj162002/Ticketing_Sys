@@ -13,7 +13,7 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ticketId;
+    private long ticketId;
 
     @Enumerated(EnumType.STRING) // Enum to store ticket types (VIP, Normal, etc.)
     private TicketType ticketType;
@@ -44,7 +44,7 @@ public class Ticket {
     }
 
     // Constructor for full initialization
-    public Ticket(int ticketId, TicketType ticketType, double ticketPrice, int ticketTotal, boolean ticketStatus) {
+    public Ticket(long ticketId, TicketType ticketType, double ticketPrice, int ticketTotal, boolean ticketStatus) {
         this.ticketId = ticketId;
         this.ticketType = ticketType;
         this.ticketPrice = ticketPrice;
