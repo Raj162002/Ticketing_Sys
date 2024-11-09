@@ -1,13 +1,13 @@
 package iit.lk.raj.model;
 
+import iit.lk.raj.exception.TicketNotAvailable;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
-@Data  // Lombok will generate getters, setters, toString, equals, and hashCode methods
+@Data// Lombok will generate getters, setters, toString
 @NoArgsConstructor  // Lombok generates a no-args constructor
 public class Ticket {
 
@@ -18,37 +18,38 @@ public class Ticket {
     @Enumerated(EnumType.STRING) // Enum to store ticket types (VIP, Normal, etc.)
     private TicketType ticketType;
 
-    private double ticketPrice;
-
-    private Date ticketReleaseDate;
-
-    private Date ticketClosingDate;
-
-    private int ticketTotal;
-
     private boolean ticketStatus;
 
     // Many-to-one relationship with Customer (a customer can have many tickets)
     @ManyToOne
-    @JoinColumn(name = "customer_id")  // Foreign key to Customer
+    @JoinColumn(name = "customerId")  // Foreign key to Customer
     private Customer customer;
 
-    // Constructor with ticket type and price
-    public Ticket(String ticketType, double ticketPrice) {
-        if (!ticketStatus) {
-            System.out.println("Ticket is not available");
-        } else {
-            this.ticketType = TicketType.valueOf(ticketType.toUpperCase()); // Convert String to Enum
-            this.ticketPrice = ticketPrice;
-        }
+    public Ticket (Customer customer, TicketType ticketType) {
+        this.ticketType = ticketType;
+        this.customer = customer;
+        this.ticketStatus = true;
     }
 
-    // Constructor for full initialization
-    public Ticket(long ticketId, TicketType ticketType, double ticketPrice, int ticketTotal, boolean ticketStatus) {
-        this.ticketId = ticketId;
-        this.ticketType = ticketType;
-        this.ticketPrice = ticketPrice;
-        this.ticketTotal = ticketTotal;
-        this.ticketStatus = ticketStatus;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "eventId")  // Foreign key to Event
+//    private Event event;
+
+    // Constructor with ticket type and price
+//    public Ticket(String ticketType, Customer customer) {
+//        this.ticketType = TicketType.valueOf(ticketType.toUpperCase());
+//        this.customer = customer;
+//    }
+//    public Ticket(String ticketType, Customer customer,int ticketCount) {
+//        if (!ticketStatus) {
+//            throw new TicketNotAvailable(ticketId);
+//        } else {
+//            this.ticketType = TicketType.valueOf(ticketType.toUpperCase());
+//
+//        }
+//    }
+
+
+
+
 }
