@@ -31,9 +31,9 @@ public class Ticket {
         this.ticketStatus = true;
     }
 
-//    @ManyToOne
-//    @JoinColumn(name = "eventId")  // Foreign key to Event
-//    private Event event;
+    @ManyToOne
+    @JoinColumn(name = "eventId")  // Foreign key to Event
+    private Event event;
 
     // Constructor with ticket type and price
 //    public Ticket(String ticketType, Customer customer) {

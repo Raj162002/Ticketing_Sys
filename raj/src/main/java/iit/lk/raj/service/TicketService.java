@@ -16,7 +16,7 @@ public class TicketService {
     private static final Logger logger = Logger.getLogger(TicketService.class.getName());
 
     // The TicketRepository is injected into the TicketService (To get the TicketRepository bean)
-    @Autowired
+
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
     }
