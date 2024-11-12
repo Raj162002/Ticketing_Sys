@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/ticket")
+@RestController
+@RequestMapping(value = "/ticket")
 public class TicketController {
     private final TicketService ticketService;
     private final CustomerService customerService;
@@ -20,12 +21,12 @@ public class TicketController {
         this.customerService = customerService;
     }
 
-    @GetMapping("/test")
+    @GetMapping(value = "/test")
     public String test() {
         return "API works correctly";
     }
 
-    @PostMapping("/addTicket")
+    @PostMapping(value = "/addTicket")
     public ResponseEntity<Ticket> addTicket(@RequestBody Customer customer){
         Customer savedCustomer = customerService.createCustomer(customer);
         Ticket newTicket = new Ticket(customer, TicketType.VIP);

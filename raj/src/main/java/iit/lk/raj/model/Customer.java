@@ -20,8 +20,8 @@ public class Customer {
     private int customerId;
 
     private String customerName;
-    private String customerEmail; // No email validation here
-    private String customerContactNumber; // Contact number
+    private String customerEmail;
+    private String customerContactNumber;
 
     // One customer can have multiple tickets
     @OneToMany(mappedBy = "customer")
