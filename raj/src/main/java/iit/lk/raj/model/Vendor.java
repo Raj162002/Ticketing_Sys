@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Vendor {
     private @Id @GeneratedValue Long vendorId;
+    private String vendorPassword;
     private String vendorName;
     private String vendorEmail;
     private String vendorContactNumber;

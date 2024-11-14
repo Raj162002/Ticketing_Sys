@@ -21,7 +21,24 @@ public class CustomerService {
     public Customer createCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
+    public Customer newCustomer(Customer customer) {
+        logger.info("New customer created: " + customer.getCustomerName());
+        return customerRepository.save(customer);
+    }
 
 
+    public Iterable<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+    public Customer login(String email, String password) {
+        // Look for the customer by email
+        Customer customer = customerRepository.findByCustomerEmail(email);
 
+        // Check if customer exists and password matches
+        if (customer != null && customer.getCustomerPassword().equals(password)) {
+            return customer; // Successful login
+        }
+
+        return null; // Invalid credentials
+    }
 }
