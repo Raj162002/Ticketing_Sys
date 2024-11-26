@@ -17,11 +17,13 @@ public class CustomerController {
     }
 
     @PostMapping(value = "/create")
-    public Customer createCustomer(@RequestBody Customer customer) {
+    public Customer createCustomer(@RequestBody Customer customer)
+    {
         return customerService.createCustomer(customer);
     }
     @GetMapping(value="/getAllCustomers")
     public Iterable<Customer> getAllCustomers(){
+
         return customerService.getAllCustomers();
     }
     @PostMapping(value = "/login")

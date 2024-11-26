@@ -16,4 +16,19 @@ public class VendorService {
     public Vendor createVendor(Vendor vendor) {
         return vendorRepository.save(vendor);
     }
+
+    public Iterable<Vendor> getAllVendors() {
+        return vendorRepository.findAll();
+    }
+    public Vendor login(String email, String password) {
+        // Look for the vendor by email
+        Vendor vendor = vendorRepository.findByVendorEmail(email);
+
+        // Check if vendor exists and password matches
+        if (vendor != null && vendor.getVendorPassword().equals(password)) {
+            return vendor; // Successful login
+        }
+
+        return null; // Invalid credentials
+    }
 }
