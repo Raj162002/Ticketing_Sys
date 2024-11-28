@@ -1,10 +1,8 @@
 package iit.lk.raj.model;
 
-import iit.lk.raj.exception.TicketNotAvailable;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
 
 @Entity
 @Data// Lombok will generate getters, setters, toString
@@ -20,6 +18,7 @@ public class Ticket {
 
     private boolean ticketStatus;
 
+
     // Many-to-one relationship with Customer (a customer can have many tickets)
     @ManyToOne
     @JoinColumn(name = "customerId")  // Foreign key to Customer
@@ -29,6 +28,12 @@ public class Ticket {
         this.ticketType = ticketType;
         this.customer = customer;
         this.ticketStatus = true;
+    }
+    public Ticket (Customer customer,Event event){
+        this.customer = customer;
+        this.ticketStatus = true;
+        this.ticketType = TicketType.NORMAL;
+        this.event = event;
     }
 
     @ManyToOne
