@@ -1,5 +1,6 @@
 package iit.lk.raj.model;
 
+import iit.lk.raj.controller.TicketController;
 import iit.lk.raj.repository.TicketRepository;
 import iit.lk.raj.service.TicketService;
 import jakarta.persistence.Entity;
@@ -15,7 +16,6 @@ import java.util.List;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class Customer implements Runnable{
 
@@ -27,25 +27,29 @@ public class Customer implements Runnable{
     private String customerEmail;
     private Long customerContactNumber;
     private String customerPassword;
-    private TicketRepository ticketRepository;
 
     // One customer can have multiple tickets
 //    @OneToMany(mappedBy = "customer")
 //    private List<Ticket> tickets;
 
-    public Customer(String customerName, String customerEmail, Long customerContactNumber, String customerPassword) {
+    public Customer(String customerName, String customerEmail, Long customerContactNumber, String customerPassword, TicketService ticketService) {
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.customerContactNumber = customerContactNumber;
         this.customerPassword = customerPassword;
+
     }
-    //The Constructor that is going to be used for the simulation
+    public Customer(){
+
+    }
     public Customer(String customerName){
         this.customerName = customerName;
     }
+
     @Override
     public void run(){
         System.out.println("Customer thread is running "+"The thread name is "+Thread.currentThread().getName());
+
 
     }
 }

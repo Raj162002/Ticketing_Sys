@@ -34,6 +34,11 @@ public class TicketController {
         return ResponseEntity.ok(savedTicket);
     }
 
+    public TicketService getTicketService() {
+        return ticketService;
+    }
 
-
+    public CustomerService getCustomerService() {
+        return customerService;
+    }
 }
