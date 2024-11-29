@@ -35,10 +35,10 @@ public class VendorService {
 
         return null; // Invalid credentials
     }
-    public synchronized void addTickets(int ticketCount, Event event){
+    public synchronized void addTickets(int ticketCount, Event event,Vendor vendor){
         for(int i=0; i<ticketCount; i++){
            try{
-               Ticket ticket=new Ticket(event);
+               Ticket ticket=new Ticket(event,vendor);
                Ticket tempTicket=ticketService.createTicket(ticket);
                System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
                try {

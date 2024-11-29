@@ -12,7 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
-    private @Id @GeneratedValue long eventId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long eventId;
     private String eventName;
     private String eventLocation;
     private Date eventDate;

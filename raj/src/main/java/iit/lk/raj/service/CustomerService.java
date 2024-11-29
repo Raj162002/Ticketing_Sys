@@ -1,6 +1,7 @@
 package iit.lk.raj.service;
 
 import iit.lk.raj.model.Customer;
+import iit.lk.raj.model.Ticket;
 import iit.lk.raj.repository.CustomerRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private Ticket ticket;
     private static final Logger logger = Logger.getLogger(TicketService.class.getName());
 
     @Autowired
@@ -40,5 +42,21 @@ public class CustomerService {
         }
 
         return null; // Invalid credentials
+    }
+    public synchronized void buyTicket(Customer customer){
+        try{
+            System.out.println("Customer "+customer.getCustomerName()+" is trying to buy a ticket");
+            System.out.println("The name of the thread is: "+Thread.currentThread().getName());
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }catch(Exception e){
+            System.out.println("Error in buying ticket");
+            System.out.println(e);
+        }
+
     }
 }

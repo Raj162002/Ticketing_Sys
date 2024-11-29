@@ -2,6 +2,7 @@ package iit.lk.raj.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import iit.lk.raj.model.Vendor;
 
 
 @Entity
@@ -19,15 +20,22 @@ public class Ticket {
     private boolean ticketStatus;
 
 
-    public Ticket(Event event){
+    public Ticket(Event event, Vendor vendor) {
         this.ticketType = TicketType.NORMAL;
         this.ticketStatus = false;
         this.event = event;
+        this.vendor = vendor;
     }
 
     @ManyToOne
     @JoinColumn(name = "eventId")  // Foreign key to Event
     private Event event;
+    @ManyToOne
+    @JoinColumn(name = "vendorId", nullable = true)  // vendor_id will be nullable
+    private Vendor vendor;
+    @ManyToOne
+    @JoinColumn(name = "customerId", nullable = true)  // vendor_id will be nullable
+    private Customer customer;
     // Constructor with ticket type and price
 //    public Ticket(String ticketType, Customer customer) {
 //        this.ticketType = TicketType.valueOf(ticketType.toUpperCase());
