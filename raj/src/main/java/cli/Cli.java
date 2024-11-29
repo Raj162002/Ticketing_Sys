@@ -60,16 +60,17 @@ public class Cli {
         }
         System.out.println("All vendor threads have finished.");
 
-//        for (int i=0; i<10; i++) {
-//            CustomerThreaded customerThreaded = new CustomerThreaded("Simulator Customer", "TestM@gmail.com", 23L, "1234", ticketService,customerService);
-//            Thread t2 = new Thread(customerThreaded);
-//            t2.setName("Customer Thread " + i);
-//            customerThreads.add(t2);
-//            t2.start();
-//        }
-//        for(Thread t2: customerThreads){
-//            t2.join();
-//        }
+        for (int i=0; i<10; i++) {
+            Customer customer = new Customer("Simulator Customer", "TestM@gmail.com", 23L, "1234");
+            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService,customer,customerService);
+            Thread t2 = new Thread(customerThreaded);
+            t2.setName("Customer Thread " + i);
+            customerThreads.add(t2);
+            t2.start();
+        }
+        for(Thread t2: customerThreads){
+            t2.join();
+        }
 
     }
 

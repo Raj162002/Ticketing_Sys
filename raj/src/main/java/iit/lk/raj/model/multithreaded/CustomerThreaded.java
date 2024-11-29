@@ -14,8 +14,8 @@ public class CustomerThreaded extends Customer implements Runnable{
         this.customerService = customerService;
     }
 
-    public CustomerThreaded(int customerId, String customerName, String customerEmail, Long customerContactNumber, String customerPassword, TicketService ticketService, Customer customer, CustomerService customerService) {
-        super(customerId, customerName, customerEmail, customerContactNumber, customerPassword);
+    public CustomerThreaded( TicketService ticketService, Customer customer, CustomerService customerService) {
+        super(customer.getCustomerName(), customer.getCustomerEmail(), customer.getCustomerContactNumber(), customer.getCustomerPassword());
         this.ticketService = ticketService;
         this.customer = customer;
         this.customerService = customerService;
