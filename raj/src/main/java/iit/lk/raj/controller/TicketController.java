@@ -12,33 +12,33 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/ticket")
 public class TicketController {
-    private final TicketService ticketService;
-    private final CustomerService customerService;
-
-    @Autowired
-    public TicketController(TicketService ticketService, CustomerService customerService) {
-        this.ticketService = ticketService;
-        this.customerService = customerService;
-    }
-
-    @GetMapping(value = "/test")
-    public String test() {
-        return "API works correctly";
-    }
-
-    @PostMapping(value = "/addTicket")
-    public ResponseEntity<Ticket> addTicket(@RequestBody Customer customer){
-        Customer savedCustomer = customerService.createCustomer(customer);
-        Ticket newTicket = new Ticket(customer, TicketType.VIP);
-        Ticket savedTicket = ticketService.createTicket(newTicket);
-        return ResponseEntity.ok(savedTicket);
-    }
-
-    public TicketService getTicketService() {
-        return ticketService;
-    }
-
-    public CustomerService getCustomerService() {
-        return customerService;
-    }
+//    private final TicketService ticketService;
+//    private final CustomerService customerService;
+//
+//    @Autowired
+//    public TicketController(TicketService ticketService, CustomerService customerService) {
+//        this.ticketService = ticketService;
+//        this.customerService = customerService;
+//    }
+//
+//    @GetMapping(value = "/test")
+//    public String test() {
+//        return "API works correctly";
+//    }
+//
+//    @PostMapping(value = "/addTicket")
+//    public ResponseEntity<Ticket> addTicket(@RequestBody Customer customer){
+//        Customer savedCustomer = customerService.createCustomer(customer);
+//        Ticket newTicket = new Ticket(customer, TicketType.VIP);
+//        Ticket savedTicket = ticketService.createTicket(newTicket);
+//        return ResponseEntity.ok(savedTicket);
+//    }
+//
+//    public TicketService getTicketService() {
+//        return ticketService;
+//    }
+//
+//    public CustomerService getCustomerService() {
+//        return customerService;
+//    }
 }

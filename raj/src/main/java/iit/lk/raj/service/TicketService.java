@@ -21,7 +21,7 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
-    public Ticket createTicket(Ticket ticket) {
+    public synchronized Ticket createTicket(Ticket ticket) {
         return ticketRepository.save(ticket);
     }
 

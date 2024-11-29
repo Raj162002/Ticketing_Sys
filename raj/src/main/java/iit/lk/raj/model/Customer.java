@@ -11,13 +11,15 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Transient;
 
 import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class Customer implements Runnable{
+public class Customer{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,28 +30,25 @@ public class Customer implements Runnable{
     private Long customerContactNumber;
     private String customerPassword;
 
+
+
     // One customer can have multiple tickets
 //    @OneToMany(mappedBy = "customer")
 //    private List<Ticket> tickets;
 
-    public Customer(String customerName, String customerEmail, Long customerContactNumber, String customerPassword, TicketService ticketService) {
+    public Customer(String customerName, String customerEmail, Long customerContactNumber, String customerPassword) {
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.customerContactNumber = customerContactNumber;
         this.customerPassword = customerPassword;
 
     }
-    public Customer(){
 
-    }
     public Customer(String customerName){
         this.customerName = customerName;
-    }
-
-    @Override
-    public void run(){
-        System.out.println("Customer thread is running "+"The thread name is "+Thread.currentThread().getName());
-
 
     }
+
+
+
 }

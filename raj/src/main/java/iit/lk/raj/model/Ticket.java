@@ -11,7 +11,7 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long ticketId;
+    private Long ticketId;
 
     @Enumerated(EnumType.STRING) // Enum to store ticket types (VIP, Normal, etc.)
     private TicketType ticketType;
@@ -19,27 +19,15 @@ public class Ticket {
     private boolean ticketStatus;
 
 
-    // Many-to-one relationship with Customer (a customer can have many tickets)
-    @ManyToOne
-    @JoinColumn(name = "customerId")  // Foreign key to Customer
-    private Customer customer;
-
-    public Ticket (Customer customer, TicketType ticketType) {
-        this.ticketType = ticketType;
-        this.customer = customer;
-        this.ticketStatus = true;
-    }
-    public Ticket (Customer customer,Event event){
-        this.customer = customer;
-        this.ticketStatus = true;
+    public Ticket(Event event){
         this.ticketType = TicketType.NORMAL;
+        this.ticketStatus = false;
         this.event = event;
     }
 
     @ManyToOne
     @JoinColumn(name = "eventId")  // Foreign key to Event
     private Event event;
-
     // Constructor with ticket type and price
 //    public Ticket(String ticketType, Customer customer) {
 //        this.ticketType = TicketType.valueOf(ticketType.toUpperCase());
