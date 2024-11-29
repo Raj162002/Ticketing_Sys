@@ -36,9 +36,6 @@ public class Cli {
         Event event = new Event(eventName, totalTickets); //Creating an event object
         EventService eventService = context.getBean(EventService.class);
         Event tempEvent = eventService.createEvent(event);
-        Event event2 = new Event(eventName, totalTickets); //Creating an event object
-        EventService eventService2 = context.getBean(EventService.class);
-        Event tempEvent2 = eventService.createEvent(event2);
         VendorService vendorService = context.getBean(VendorService.class);
         TicketService ticketService = context.getBean(TicketService.class);
         CustomerService customerService = context.getBean(CustomerService.class);
@@ -48,19 +45,15 @@ public class Cli {
 
         for (int i = 0; i < 10; i++) {
             Vendor vendor = new Vendor("Simulator Vendor", "Test@gmail.com", "0771234567", "1234");
-            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, tempEvent2, totalTickets);
-            Thread t = new Thread(vendorThreaded);
-            t.setName("Vendor Thread " + i);
-            vendorThreads.add(t);  // Add thread to the list
-            t.start();
+            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, tempEvent, totalTickets);
+            Thread t1 = new Thread(vendorThreaded);
+            t1.setName("Vendor Thread " + i);
+            vendorThreads.add(t1);  // Add thread to the list
+            t1.start();
         }
-        // Join all threads to wait for them to finish
-        for (Thread t : vendorThreads) {
-            t.join();  // Wait for each thread to finish
-        }
-        System.out.println("All vendor threads have finished.");
 
-        for (int i=0; i<10; i++) {
+
+        for (int i=0; i<90; i++) {
             Customer customer = new Customer("Simulator Customer", "TestM@gmail.com", 23L, "1234");
             CustomerThreaded customerThreaded = new CustomerThreaded(ticketService,customer,customerService);
             Thread t2 = new Thread(customerThreaded);
@@ -68,9 +61,15 @@ public class Cli {
             customerThreads.add(t2);
             t2.start();
         }
+        // Join all threads to wait for them to finish
+        for (Thread t1 : vendorThreads) {
+            t1.join();  // Wait for each thread to finish
+        }
+        System.out.println("All vendor threads have finished.");
         for(Thread t2: customerThreads){
             t2.join();
         }
+        SpringApplication.exit(context);
 
     }
 

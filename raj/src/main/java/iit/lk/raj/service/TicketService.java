@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +19,8 @@ import java.util.logging.Logger;
 public class TicketService {
     private final TicketRepository ticketRepository;
     private static final Logger logger = Logger.getLogger(TicketService.class.getName());
+    private final Lock ticketLock = new ReentrantLock();
+
 
     // The TicketRepository is injected into the TicketService (To get the TicketRepository bean)
 
@@ -27,25 +31,30 @@ public class TicketService {
     public synchronized Ticket createTicket(Ticket ticket) {
         return ticketRepository.save(ticket);
     }
-    public synchronized void buyTicket(Customer customer){
-        try{
-            System.out.println("The name of the thread is: "+Thread.currentThread().getName());
-            Ticket tempTicket=findFirstTicketWithFalseStatus();
-            tempTicket.setTicketStatus(true);
-            tempTicket.setCustomer(customer);
-            ticketRepository.save(tempTicket);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println("Ticket with id "+tempTicket.getTicketId()+" has been bought by "+Thread.currentThread().getName());
-        }catch(Exception e){
-            System.out.println("Error in buying ticket");
-            System.out.println(e);
-
-        }
-    }
+//    public synchronized void buyTicket(Customer customer){
+//        try{
+//            System.out.println("The name of the thread is: "+Thread.currentThread().getName());
+//            tempTicket=findFirstTicketWithFalseStatus();
+//            if(tempTicket==null){
+//                System.out.println("No tickets available at buy ticket");
+//                wait();
+//            }
+//            tempTicket.setTicketStatus(true);
+//            tempTicket.setCustomer(customer);
+//            ticketRepository.save(tempTicket);
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//            System.out.println("Ticket with id "+tempTicket.getTicketId()+" has been bought by "+Thread.currentThread().getName());
+//            notifyAll();
+//        }catch(Exception e){
+//            System.out.println("Error in buying ticket");
+//            System.out.println(e);
+//
+//        }
+//    }
 
 //Gets all tickets from the database and returns them as a list
     public List<Ticket> getAllTickets() {
@@ -62,7 +71,7 @@ public class TicketService {
         ticketRepository.deleteById(id);
         logger.log(Level.INFO, "Successfully deleted ticket with ID: {0}", id);
     }
-    public void changeTicketStatus(Long ticketId, boolean newStatus) {
+    public synchronized void changeTicketStatus(Long ticketId, boolean newStatus) {
         try {
             // Fetch the ticket from the database
             Ticket ticket = null;
@@ -85,25 +94,110 @@ public class TicketService {
         }
     }
     public synchronized Ticket findFirstTicketWithFalseStatus() throws Exception {
-       try{
-           // Call the repository method to find the first ticket with ticketStatus = false
-           List<Ticket> FalseticketList = ticketRepository.findByTicketStatusFalse();
-
-           // If the ticket is present, return it; otherwise, throw an exception
-           if (FalseticketList!=null && !(FalseticketList.isEmpty())) {
-               return FalseticketList.get(0);
-           } else {
-               // If no ticket is found, throw a custom exception
-               throw new Exception("No ticket with false status found");
-           }
-       }
-        catch (Exception e) {
-            // Handle any exceptions that occur during the process
-            System.out.println("Error while finding ticket with false status: " + e.getMessage());
-            return null;
+        List<Ticket> falseticketList = ticketRepository.findByTicketStatusFalse();
+        System.out.println("The list is going to be printed in "+Thread.currentThread().getName());
+        if(falseticketList.isEmpty()){
+            System.out.println("The list is empty");
+        }
+        for (Ticket ticket : falseticketList) {
+            System.out.println(ticket);
         }
 
+        if (falseticketList != null && !falseticketList.isEmpty()) {
+            return falseticketList.get(0);
+        } else {
+            return null; // No available ticket, return null
+        }
     }
+    public void buyTicket2(Customer customer) {
+        try {
+            // Find the first available ticket with false status
+            Ticket tempTicket = findFirstTicketWithFalseStatus();
+
+            // Wait if no ticket is available
+            while (tempTicket == null) {
+                try {
+                    System.out.println("No tickets available, waiting...");
+                    wait();  // Wait for tickets to be available
+
+                    // Recheck ticket availability after being notified
+                    tempTicket = findFirstTicketWithFalseStatus();
+                } catch (InterruptedException e) {
+                    // Proper handling of interruption
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+
+            // Double-check ticket status to prevent race conditions
+            if (tempTicket.isTicketStatus() == false) {
+                tempTicket.setTicketStatus(true);
+                tempTicket.setCustomer(customer);
+                ticketRepository.save(tempTicket);
+
+                // Simulate processing delay
+                Thread.sleep(1000);
+
+                System.out.println("Ticket with id " + tempTicket.getTicketId() + " has been bought by " + Thread.currentThread().getName());
+
+                // Notify all waiting threads that a ticket was bought
+                notifyAll();
+            } else {
+                // If ticket was already taken, wait again
+                wait();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error in buying ticket: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void buyTicket3(Customer customer) {
+        try {
+            // Acquire the lock to ensure thread-safe access
+            ticketLock.lock();
+
+            try {
+                // Find available tickets
+                List<Ticket> availableTickets = ticketRepository.findByTicketStatusFalse();
+
+                // Check if tickets are available
+                if (availableTickets.isEmpty()) {
+                    System.out.println(Thread.currentThread().getName() + ": No tickets available");
+                    return;
+                }
+
+                // Get the first available ticket
+                Ticket ticketToBuy = availableTickets.get(0);
+
+                // Double-check ticket status (additional safety)
+                if (!ticketToBuy.isTicketStatus()) {
+                    // Mark ticket as bought
+                    ticketToBuy.setTicketStatus(true);
+                    ticketToBuy.setCustomer(customer);
+
+                    // Save the updated ticket
+                    ticketRepository.save(ticketToBuy);
+
+                    // Log successful booking
+                    System.out.println("Ticket with id " + ticketToBuy.getTicketId() +
+                            " has been bought by " + Thread.currentThread().getName());
+                }
+            } finally {
+                // Always release the lock
+                ticketLock.unlock();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in buying ticket: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
 
 
 }

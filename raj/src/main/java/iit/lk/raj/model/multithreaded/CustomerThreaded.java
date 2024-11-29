@@ -19,12 +19,12 @@ public class CustomerThreaded extends Customer implements Runnable{
         this.ticketService = ticketService;
         this.customer = customer;
         this.customerService = customerService;
-        customerService.createCustomer(customer);
+        this.customerService.createCustomer(customer);
     }
 
     @Override
     public void run(){
         System.out.println("Customer "+this.getCustomerName()+" is trying to buy a ticket");
-        ticketService.buyTicket(customer);
+        ticketService.buyTicket3(customer);
     }
 }
