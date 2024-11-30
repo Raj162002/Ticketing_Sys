@@ -45,7 +45,7 @@ public class Cli {
 
         for (int i = 0; i < 10; i++) {
             Vendor vendor = new Vendor("Simulator Vendor", "Test@gmail.com", "0771234567", "1234");
-            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, tempEvent, totalTickets);
+            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, tempEvent, totalTickets,ticketService);
             Thread t1 = new Thread(vendorThreaded);
             t1.setName("Vendor Thread " + i);
             vendorThreads.add(t1);  // Add thread to the list

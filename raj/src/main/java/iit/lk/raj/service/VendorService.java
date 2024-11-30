@@ -32,27 +32,7 @@ public class VendorService {
         if (vendor != null && vendor.getVendorPassword().equals(password)) {
             return vendor; // Successful login
         }
-
         return null; // Invalid credentials
     }
-    public synchronized void addTickets(int ticketCount, Event event,Vendor vendor){
-        for(int i=0; i<ticketCount; i++){
-           try{
-               Ticket ticket=new Ticket(event,vendor);
-               Ticket tempTicket=ticketService.createTicket(ticket);
-               System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
-               try {
-                   Thread.sleep(1000);
-               } catch (InterruptedException e) {
-                   throw new RuntimeException(e);
-               }
-           }catch(Exception e){
-               System.out.println("Error in adding tickets");
-               System.out.println(e);
-           }
 
-        }
-        System.out.println("Tickets added successfully"+" For the thread: "+Thread.currentThread().getName());
-
-    }
 }
