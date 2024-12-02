@@ -24,28 +24,36 @@ public class Cli {
 
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext context = SpringApplication.run(RajApplication.class);
-        TicketController ticketController = context.getBean(TicketController.class);
-
         Scanner s = new Scanner(System.in);
-        System.out.print("Enter the total number of tickets: ");
+        System.out.print("Enter the total number of tickets per vendor: ");
         int totalTickets = Integer.parseInt(s.next());
         s.nextLine(); //To clear the buffer
         System.out.print("Enter the event name: ");
         String eventName = s.next(); //To clear the buffer
         s.nextLine();
+        System.out.print("The required number of vendors :-");
+        int vendorCount = Integer.parseInt(s.next());
+        System.out.print("Enter the ticket retrival rate:-");
+        int ticketRetrivalRate = Integer.parseInt(s.next());
+        s.nextLine();
+        System.out.print("Enter the customer retrival rate:-");
+        int customerRetrivalRate = Integer.parseInt(s.next());
+        s.nextLine();
         Event event = new Event(eventName, totalTickets); //Creating an event object
         EventService eventService = context.getBean(EventService.class);
-        Event tempEvent = eventService.createEvent(event);
+        eventService.createEvent(event);
         VendorService vendorService = context.getBean(VendorService.class);
         TicketService ticketService = context.getBean(TicketService.class);
+        ticketService.setTicketRetrivalRate(ticketRetrivalRate);
+        ticketService.setCustomerRetrivalRate(customerRetrivalRate);
         CustomerService customerService = context.getBean(CustomerService.class);
         // List to store references to threads
         List<Thread> vendorThreads = new ArrayList<>();
         List<Thread> customerThreads = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < vendorCount; i++) {
             Vendor vendor = new Vendor("Simulator Vendor", "Test@gmail.com", "0771234567", "1234");
-            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, tempEvent, totalTickets,ticketService);
+            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, event, totalTickets,ticketService);
             Thread t1 = new Thread(vendorThreaded);
             t1.setName("Vendor Thread " + i);
             vendorThreads.add(t1);  // Add thread to the list
@@ -54,7 +62,7 @@ public class Cli {
         Thread.sleep(2000);
 
 
-        for (int i=0; i<100; i++) {
+        for (int i=0; i<totalTickets*vendorCount; i++) {
             Customer customer = new Customer("Simulator Customer", "TestM@gmail.com", 23L, "1234");
             CustomerThreaded customerThreaded = new CustomerThreaded(ticketService,customer,customerService);
             Thread t2 = new Thread(customerThreaded);

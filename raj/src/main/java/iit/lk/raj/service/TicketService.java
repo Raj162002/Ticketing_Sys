@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -22,7 +21,24 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private static final Logger logger = Logger.getLogger(TicketService.class.getName());
     private final Lock ticketLock = new ReentrantLock();
+    private int customerRetrivalRate;
+    private int ticketRetrivalRate;
 
+    public int getTicketRetrivalRate() {
+        return ticketRetrivalRate;
+    }
+
+    public void setTicketRetrivalRate(int ticketRetrivalRate) {
+        this.ticketRetrivalRate = ticketRetrivalRate;
+    }
+
+    public int getCustomerRetrivalRate() {
+        return customerRetrivalRate;
+    }
+
+    public void setCustomerRetrivalRate(int customerRetrivalRate) {
+        this.customerRetrivalRate = customerRetrivalRate;
+    }
 
     // The TicketRepository is injected into the TicketService (To get the TicketRepository bean)
     @Autowired
@@ -42,7 +58,7 @@ public class TicketService {
                 System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
                 notifyAll();
                 try {
-                    Thread.currentThread().sleep(1000);
+                    Thread.currentThread().sleep(ticketRetrivalRate*1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -76,7 +92,7 @@ public class TicketService {
             tempTicket.setCustomer(customer);
             ticketRepository.save(tempTicket);
             try {
-                Thread.currentThread().sleep(1000);
+                Thread.currentThread().sleep(customerRetrivalRate*1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
