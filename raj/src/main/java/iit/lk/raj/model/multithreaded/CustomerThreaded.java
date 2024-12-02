@@ -25,6 +25,10 @@ public class CustomerThreaded extends Customer implements Runnable{
     @Override
     public void run(){
         System.out.println("Customer "+this.getCustomerName()+" is trying to buy a ticket");
-        ticketService.buyTicket(customer);
+        try {
+            ticketService.buyTicket(customer);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

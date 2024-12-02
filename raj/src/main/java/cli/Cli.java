@@ -51,9 +51,10 @@ public class Cli {
             vendorThreads.add(t1);  // Add thread to the list
             t1.start();
         }
+        Thread.sleep(2000);
 
 
-        for (int i=0; i<90; i++) {
+        for (int i=0; i<100; i++) {
             Customer customer = new Customer("Simulator Customer", "TestM@gmail.com", 23L, "1234");
             CustomerThreaded customerThreaded = new CustomerThreaded(ticketService,customer,customerService);
             Thread t2 = new Thread(customerThreaded);
@@ -63,11 +64,13 @@ public class Cli {
         }
         // Join all threads to wait for them to finish
         for (Thread t1 : vendorThreads) {
-            t1.join();  // Wait for each thread to finish
+            t1.join();
+            Thread.sleep(1000);// Wait for each thread to finish
         }
         System.out.println("All vendor threads have finished.");
         for(Thread t2: customerThreads){
             t2.join();
+            Thread.sleep(1000);// Wait for each thread to finish
         }
         SpringApplication.exit(context);
 

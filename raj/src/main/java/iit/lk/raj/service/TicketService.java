@@ -25,7 +25,7 @@ public class TicketService {
 
 
     // The TicketRepository is injected into the TicketService (To get the TicketRepository bean)
-
+    @Autowired
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
     }
@@ -40,8 +40,9 @@ public class TicketService {
                 Ticket ticket=new Ticket(event,vendor);
                 createTicket(ticket);
                 System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
+                notifyAll();
                 try {
-                    Thread.sleep(1000);
+                    Thread.currentThread().sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -62,19 +63,24 @@ public class TicketService {
             tempTicket=findFirstTicketWithFalseStatus();
             while(tempTicket==null){
                 System.out.println("No tickets available at buy ticket");
-                wait(1000);
+                try {
+                    System.out.println("The thread is going to wait");
+                    wait();
+                    System.out.println("The thread is out of waiting");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
                 tempTicket=findFirstTicketWithFalseStatus();
             }
             tempTicket.setTicketStatus(true);
             tempTicket.setCustomer(customer);
             ticketRepository.save(tempTicket);
             try {
-                Thread.sleep(1000);
+                Thread.currentThread().sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             System.out.println("Ticket with id "+tempTicket.getTicketId()+" has been bought by "+Thread.currentThread().getName());
-            notifyAll();
         }catch(Exception e){
             System.out.println("Error in buying ticket");
             System.out.println(e);
@@ -120,7 +126,7 @@ public class TicketService {
         }
     }
 
-    public Ticket findFirstTicketWithFalseStatus() throws Exception {
+    public synchronized Ticket findFirstTicketWithFalseStatus() throws Exception {
         List<Ticket> falseticketList = ticketRepository.findByTicketStatusFalse();
         System.out.println("The list is going to be printed in "+Thread.currentThread().getName());
         if(!falseticketList.isEmpty()){
