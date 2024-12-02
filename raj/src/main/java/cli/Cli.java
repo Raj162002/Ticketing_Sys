@@ -1,10 +1,8 @@
 package cli;
 
 import iit.lk.raj.RajApplication;
-import iit.lk.raj.controller.TicketController;
 import iit.lk.raj.model.Customer;
 import iit.lk.raj.model.Event;
-import iit.lk.raj.model.Ticket;
 import iit.lk.raj.model.Vendor;
 import iit.lk.raj.model.multithreaded.CustomerThreaded;
 import iit.lk.raj.model.multithreaded.VendorThreaded;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Cli {
-    private int totalTickets;
 
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext context = SpringApplication.run(RajApplication.class);
