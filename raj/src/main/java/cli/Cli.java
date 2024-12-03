@@ -49,7 +49,7 @@ public class Cli {
         List<Thread> customerThreads = new ArrayList<>();
 
         for (int i = 0; i < vendorCount; i++) {
-            Vendor vendor = new Vendor("Simulator Vendor", "Test@gmail.com", "0771234567", "1234");
+            Vendor vendor = new Vendor("Simulator Vendor "+i, "Test@gmail.com", "0771234567", "1234");
             VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, event, totalTickets,ticketService);
             Thread t1 = new Thread(vendorThreaded);
             t1.setName("Vendor Thread " + i);
@@ -60,7 +60,7 @@ public class Cli {
 
 
         for (int i=0; i<totalTickets*vendorCount; i++) {
-            Customer customer = new Customer("Simulator Customer", "TestM@gmail.com", 23L, "1234");
+            Customer customer = new Customer("Simulator Customer "+ i, "TestM@gmail.com", 23L, "1234");
             CustomerThreaded customerThreaded = new CustomerThreaded(ticketService,customer,customerService);
             Thread t2 = new Thread(customerThreaded);
             t2.setName("Customer Thread " + i);
