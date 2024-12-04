@@ -1,5 +1,6 @@
 package cli;
 
+import com.google.gson.Gson;
 import iit.lk.raj.RajApplication;
 import iit.lk.raj.model.Customer;
 import iit.lk.raj.model.Event;
@@ -13,6 +14,8 @@ import iit.lk.raj.service.VendorService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,20 +26,33 @@ public class Cli {
         ApplicationContext context = SpringApplication.run(RajApplication.class);
         Scanner s = new Scanner(System.in);
         System.out.println("Welcome to the event management system");
+
+        // Capture inputs from the user
         int totalTickets = getIntInput(s, "Enter the total number of tickets per vendor for the event:");
         String eventName = getStringInput(s, "Enter the event name: ");
         double eventTicketPrice = getDoubleInput(s, "Enter the event normal ticket price: ");
         int vendorCount = getIntInput(s, "Enter the number of vendors: ");
         int ticketRetrivalRate = getIntInput(s, "Enter the ticket retrival rate:");
         int customerRetrivalRate = getIntInput(s, "Enter the customer retrival rate:");
+
+        // Create Event object
         Event event = new Event(eventName, totalTickets, eventTicketPrice); //Creating an event object
         EventService eventService = context.getBean(EventService.class);
         eventService.createEvent(event);
+
+        // Create Config object to save the settings
+        Config config = new Config(totalTickets, eventName, eventTicketPrice, vendorCount, ticketRetrivalRate, customerRetrivalRate);
+
+        // Serialize Config object to JSON and save to file
+        saveConfigToFile(config);
+
+        // Continue with the existing logic to start vendor and customer threads
         VendorService vendorService = context.getBean(VendorService.class);
         TicketService ticketService = context.getBean(TicketService.class);
         ticketService.setTicketRetrivalRate(ticketRetrivalRate);
         ticketService.setCustomerRetrivalRate(customerRetrivalRate);
         CustomerService customerService = context.getBean(CustomerService.class);
+
         // List to store references to threads
         List<Thread> vendorThreads = new ArrayList<>();
         List<Thread> customerThreads = new ArrayList<>();
@@ -51,7 +67,6 @@ public class Cli {
         }
         Thread.sleep(2000);
 
-
         for (int i = 0; i < totalTickets * vendorCount; i++) {
             Customer customer = new Customer("Simulator Customer " + i, "TestM@gmail.com", 23L, "1234");
             CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, customerService);
@@ -60,48 +75,62 @@ public class Cli {
             customerThreads.add(t2);
             t2.start();
         }
+
         // Join all threads to wait for them to finish
         for (Thread t1 : vendorThreads) {
             t1.join();
-            Thread.sleep(1000);// Wait for each thread to finish
+            Thread.sleep(1000); // Wait for each thread to finish
         }
         System.out.println("All vendor threads have finished.");
+
         for (Thread t2 : customerThreads) {
             t2.join();
-            Thread.sleep(1000);// Wait for each thread to finish
+            Thread.sleep(1000); // Wait for each thread to finish
         }
-        SpringApplication.exit(context);
 
+        SpringApplication.exit(context);
     }
 
-   public static String getStringInput(Scanner s, String message) {
+    public static String getStringInput(Scanner s, String message) {
         System.out.println(message);
-        String input = s.nextLine();
-        return input;
+        return s.nextLine();
     }
 
     public static int getIntInput(Scanner s, String message) {
-       while (true) {
-           try {
-               System.out.println(message);
-               int input = s.nextInt();
-               s.nextLine();
-               return input;
-           } catch (Exception e) {
-               System.out.println("Please enter a valid number.");
-           }
-       }
+        while (true) {
+            try {
+                System.out.println(message);
+                int input = s.nextInt();
+                s.nextLine(); // Consume newline character
+                return input;
+            } catch (Exception e) {
+                System.out.println("Please enter a valid number.");
+                s.nextLine(); // Consume invalid input
+            }
+        }
     }
+
     public static double getDoubleInput(Scanner s, String message) {
         while (true) {
             try {
                 System.out.println(message);
                 double input = s.nextDouble();
-                s.nextLine();
+                s.nextLine(); // Consume newline character
                 return input;
             } catch (Exception e) {
                 System.out.println("Please enter a valid number.");
             }
+        }
+    }
+
+    // Save the Config object to a JSON file
+    private static void saveConfigToFile(Config config) {
+        Gson gson = new Gson();
+        try (FileWriter writer = new FileWriter("config.json")) {
+            gson.toJson(config, writer);
+            System.out.println("Config data saved to config.json");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
