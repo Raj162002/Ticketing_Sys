@@ -56,12 +56,13 @@ public class TicketService {
                 Ticket ticket=new Ticket(event,vendor);
                 createTicket(ticket);
                 System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
-                notifyAll();
+
                 try {
                     Thread.currentThread().sleep(ticketRetrivalRate*1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                notifyAll();
             }catch(Exception e){
                 System.out.println("Error in adding tickets");
                 System.out.println(e);
@@ -146,12 +147,12 @@ public class TicketService {
         List<Ticket> falseticketList = ticketRepository.findByTicketStatusFalse();
         System.out.println("The list is going to be printed in "+Thread.currentThread().getName());
         if(!falseticketList.isEmpty()){
-            System.out.println("The list is empty");
             for (Ticket ticket : falseticketList) {
                 System.out.println(ticket);
             }
             return falseticketList.get(0);
         }
+        System.out.println("The list is empty");
         return null;
     }
 

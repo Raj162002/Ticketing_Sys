@@ -19,6 +19,8 @@ public class Ticket {
 
     private boolean ticketStatus;
 
+    private String ticketPrice;
+
 
     public Ticket(Event event, Vendor vendor) {
         this.ticketType = TicketType.NORMAL;
@@ -36,6 +38,8 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "customerId", nullable = true)  // vendor_id will be nullable
     private Customer customer;
+
+
     // Constructor with ticket type and price
 //    public Ticket(String ticketType, Customer customer) {
 //        this.ticketType = TicketType.valueOf(ticketType.toUpperCase());

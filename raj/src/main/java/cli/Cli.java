@@ -36,7 +36,7 @@ public class Cli {
         System.out.print("Enter the customer retrival rate:-");
         int customerRetrivalRate = Integer.parseInt(s.next());
         s.nextLine();
-        Event event = new Event(eventName, totalTickets); //Creating an event object
+        Event event = new Event(eventName, totalTickets,100); //Creating an event object
         EventService eventService = context.getBean(EventService.class);
         eventService.createEvent(event);
         VendorService vendorService = context.getBean(VendorService.class);

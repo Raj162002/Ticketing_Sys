@@ -41,9 +41,10 @@ public class Event {
         this.eventTotalTickets = eventTotalTickets;
     }
     //The Constructor that is going to be used for the simulation
-    public Event (String eventName,long eventTotalTickets){
+    public Event (String eventName,long eventTotalTickets,long eventTicketPrice){
         this.eventName = eventName;
         this.eventTotalTickets = eventTotalTickets;
+        this.eventTicketPrice = eventTicketPrice;
     }
     @ManyToOne
     @JoinColumn(name = "vendorId")
