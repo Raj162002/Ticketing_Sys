@@ -22,21 +22,14 @@ public class Cli {
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext context = SpringApplication.run(RajApplication.class);
         Scanner s = new Scanner(System.in);
-        System.out.print("Enter the total number of tickets per vendor: ");
-        int totalTickets = Integer.parseInt(s.next());
-        s.nextLine(); //To clear the buffer
-        System.out.print("Enter the event name: ");
-        String eventName = s.next(); //To clear the buffer
-        s.nextLine();
-        System.out.print("The required number of vendors :-");
-        int vendorCount = Integer.parseInt(s.next());
-        System.out.print("Enter the ticket retrival rate:-");
-        int ticketRetrivalRate = Integer.parseInt(s.next());
-        s.nextLine();
-        System.out.print("Enter the customer retrival rate:-");
-        int customerRetrivalRate = Integer.parseInt(s.next());
-        s.nextLine();
-        Event event = new Event(eventName, totalTickets,100); //Creating an event object
+        System.out.println("Welcome to the event management system");
+        int totalTickets = getIntInput(s, "Enter the total number of tickets per vendor for the event:");
+        String eventName = getStringInput(s, "Enter the event name: ");
+        double eventTicketPrice = getDoubleInput(s, "Enter the event normal ticket price: ");
+        int vendorCount = getIntInput(s, "Enter the number of vendors: ");
+        int ticketRetrivalRate = getIntInput(s, "Enter the ticket retrival rate:");
+        int customerRetrivalRate = getIntInput(s, "Enter the customer retrival rate:");
+        Event event = new Event(eventName, totalTickets, eventTicketPrice); //Creating an event object
         EventService eventService = context.getBean(EventService.class);
         eventService.createEvent(event);
         VendorService vendorService = context.getBean(VendorService.class);
@@ -49,8 +42,8 @@ public class Cli {
         List<Thread> customerThreads = new ArrayList<>();
 
         for (int i = 0; i < vendorCount; i++) {
-            Vendor vendor = new Vendor("Simulator Vendor "+i, "Test@gmail.com", "0771234567", "1234");
-            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, event, totalTickets,ticketService);
+            Vendor vendor = new Vendor("Simulator Vendor " + i, "Test@gmail.com", "0771234567", "1234");
+            VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, event, totalTickets, ticketService);
             Thread t1 = new Thread(vendorThreaded);
             t1.setName("Vendor Thread " + i);
             vendorThreads.add(t1);  // Add thread to the list
@@ -59,9 +52,9 @@ public class Cli {
         Thread.sleep(2000);
 
 
-        for (int i=0; i<totalTickets*vendorCount; i++) {
-            Customer customer = new Customer("Simulator Customer "+ i, "TestM@gmail.com", 23L, "1234");
-            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService,customer,customerService);
+        for (int i = 0; i < totalTickets * vendorCount; i++) {
+            Customer customer = new Customer("Simulator Customer " + i, "TestM@gmail.com", 23L, "1234");
+            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, customerService);
             Thread t2 = new Thread(customerThreaded);
             t2.setName("Customer Thread " + i);
             customerThreads.add(t2);
@@ -73,7 +66,7 @@ public class Cli {
             Thread.sleep(1000);// Wait for each thread to finish
         }
         System.out.println("All vendor threads have finished.");
-        for(Thread t2: customerThreads){
+        for (Thread t2 : customerThreads) {
             t2.join();
             Thread.sleep(1000);// Wait for each thread to finish
         }
@@ -81,5 +74,34 @@ public class Cli {
 
     }
 
+   public static String getStringInput(Scanner s, String message) {
+        System.out.println(message);
+        String input = s.nextLine();
+        return input;
+    }
 
+    public static int getIntInput(Scanner s, String message) {
+       while (true) {
+           try {
+               System.out.println(message);
+               int input = s.nextInt();
+               s.nextLine();
+               return input;
+           } catch (Exception e) {
+               System.out.println("Please enter a valid number.");
+           }
+       }
+    }
+    public static double getDoubleInput(Scanner s, String message) {
+        while (true) {
+            try {
+                System.out.println(message);
+                double input = s.nextDouble();
+                s.nextLine();
+                return input;
+            } catch (Exception e) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+    }
 }
