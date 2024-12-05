@@ -24,7 +24,7 @@ public class VendorThreaded extends Vendor implements Runnable {
         this.ticketService = ticketService;
     }
     public VendorThreaded(Vendor vendor, VendorService vendorService, Event event, int ticketCount, TicketService ticketService) {
-//        super(vendor.getVendorName(), vendor.getVendorEmail(), vendor.getVendorContactNumber(), vendor.getVendorPassword());
+        super(vendor.getVendorName(), vendor.getVendorEmail(), vendor.getVendorContactNumber(), vendor.getVendorPassword());
         this.vendorService = vendorService;
         this.event=event;
         this.ticketCount=ticketCount;

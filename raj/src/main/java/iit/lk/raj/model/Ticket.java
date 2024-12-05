@@ -19,7 +19,7 @@ public class Ticket {
 
     private boolean ticketStatus;
 
-    private String ticketPrice;
+    private double ticketPrice;
 
 
     public Ticket(Event event, Vendor vendor) {
@@ -27,6 +27,7 @@ public class Ticket {
         this.ticketStatus = false;
         this.event = event;
         this.vendor = vendor;
+        this.ticketPrice = event.getEventTicketPrice();
     }
 
     @ManyToOne

@@ -21,13 +21,13 @@ public class Event {
     private String eventStartTime;
     private String eventEndTime;
     private long eventTicketCount;
-    private long eventTicketPrice;
-    private long eventVIPPrice;
+    private double eventTicketPrice;
+    private double eventVIPPrice;
     private Date eventTicketReleaseDate;
     private Date eventTicketClosingDate;
     private boolean eventStatus;
     private long eventTotalTickets;
-    public Event(String eventName, String eventLocation, Date eventDate, String eventStartTime, String eventEndTime, long eventTicketCount, long eventTicketPrice, long eventVIPPrice, Date eventTicketReleaseDate, Date eventTicketClosingDate, long eventTotalTickets) {
+    public Event(String eventName, String eventLocation, Date eventDate, String eventStartTime, String eventEndTime, long eventTicketCount, double eventTicketPrice, double eventVIPPrice, Date eventTicketReleaseDate, Date eventTicketClosingDate, long eventTotalTickets) {
         this.eventName = eventName;
         this.eventLocation = eventLocation;
         this.eventDate = eventDate;
@@ -41,7 +41,7 @@ public class Event {
         this.eventTotalTickets = eventTotalTickets;
     }
     //The Constructor that is going to be used for the simulation
-    public Event (String eventName,long eventTotalTickets,long eventTicketPrice){
+    public Event (String eventName,long eventTotalTickets,double eventTicketPrice){
         this.eventName = eventName;
         this.eventTotalTickets = eventTotalTickets;
         this.eventTicketPrice = eventTicketPrice;
