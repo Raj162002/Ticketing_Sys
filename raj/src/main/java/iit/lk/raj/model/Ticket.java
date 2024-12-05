@@ -40,20 +40,6 @@ public class Ticket {
     private Customer customer;
 
 
-    // Constructor with ticket type and price
-//    public Ticket(String ticketType, Customer customer) {
-//        this.ticketType = TicketType.valueOf(ticketType.toUpperCase());
-//        this.customer = customer;
-//    }
-//    public Ticket(String ticketType, Customer customer,int ticketCount) {
-//        if (!ticketStatus) {
-//            throw new TicketNotAvailable(ticketId);
-//        } else {
-//            this.ticketType = TicketType.valueOf(ticketType.toUpperCase());
-//
-//        }
-//    }
-
 
 
 
