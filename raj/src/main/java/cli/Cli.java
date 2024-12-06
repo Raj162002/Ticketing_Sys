@@ -25,7 +25,7 @@ import java.util.Scanner;
 
 public class Cli {
 
-    private static final String CONFIG_FILE_PATH = "simulation_config.json";
+    private static final String configFilePath = "CLI_simulation_config.json";
 
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext context = SpringApplication.run(RajApplication.class);
@@ -36,7 +36,7 @@ public class Cli {
         Config config = null;
 
         // Check if config.json exists and is valid
-        if (new File(CONFIG_FILE_PATH).exists()) {
+        if (new File(configFilePath).exists()) {
             System.out.println("Do you want to use the previous configuration? (y/n)");
             String choice = s.nextLine().trim().toLowerCase();
 
@@ -149,9 +149,9 @@ public class Cli {
     // Save the Config object to a JSON file
     private static void saveConfigToFile(Config config) {
         Gson gson = new Gson();
-        try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
+        try (FileWriter writer = new FileWriter(configFilePath)) {
             gson.toJson(config, writer);
-            System.out.println("Config data saved to " + CONFIG_FILE_PATH);
+            System.out.println("Config data saved to " + configFilePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,7 +160,7 @@ public class Cli {
     // Load the Config object from a JSON file
     private static Config loadConfigFromFile() {
         Gson gson = new Gson();
-        try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
+        try (FileReader reader = new FileReader(configFilePath)) {
             return gson.fromJson(reader, Config.class);
         } catch (IOException | JsonSyntaxException e) {
             System.out.println("Error reading or parsing the config file. Creating a new config.");
