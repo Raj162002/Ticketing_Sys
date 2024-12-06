@@ -37,6 +37,7 @@ public class CustomerController {
 
         if (customer != null) {
             // If customer is found, return the customer object
+            System.out.println("Login done for "+customer.getCustomerName());
             return ResponseEntity.ok(customer);
         } else {
             // If customer is not found or password is incorrect

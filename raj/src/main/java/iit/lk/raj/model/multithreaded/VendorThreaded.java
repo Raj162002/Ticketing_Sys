@@ -16,7 +16,7 @@ public class VendorThreaded extends Vendor implements Runnable {
         this.vendorService = vendorService;
         this.ticketService = ticketService;
     }
-    public VendorThreaded(String vendorName, String vendorEmail, String vendorContactNumber, String vendorPassword, VendorService vendorService, Event event, int ticketCount, TicketService ticketService) {
+    public VendorThreaded(String vendorName, String vendorEmail, Long vendorContactNumber, String vendorPassword, VendorService vendorService, Event event, int ticketCount, TicketService ticketService) {
         super(vendorName, vendorEmail, vendorContactNumber, vendorPassword);
         this.vendorService = vendorService;
         this.event=event;

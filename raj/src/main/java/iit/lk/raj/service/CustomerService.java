@@ -20,16 +20,14 @@ public class CustomerService {
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
+
     public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
-    }
-    public Customer newCustomer(Customer customer) {
-        logger.info("New customer created: " + customer.getCustomerName());
         return customerRepository.save(customer);
     }
 
 
     public Iterable<Customer> getAllCustomers() {
+
         return customerRepository.findAll();
     }
     public Customer login(String email, String password) {
@@ -43,20 +41,5 @@ public class CustomerService {
 
         return null; // Invalid credentials
     }
-    public synchronized void buyTicket(Customer customer){
-        try{
-            System.out.println("Customer "+customer.getCustomerName()+" is trying to buy a ticket");
-            System.out.println("The name of the thread is: "+Thread.currentThread().getName());
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }catch(Exception e){
-            System.out.println("Error in buying ticket");
-            System.out.println(e);
-        }
-
-    }
 }

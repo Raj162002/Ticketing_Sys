@@ -25,24 +25,29 @@ public class TicketService {
     private int ticketRetrivalRate;
 
     public int getTicketRetrivalRate() {
+
         return ticketRetrivalRate;
     }
 
     public void setTicketRetrivalRate(int ticketRetrivalRate) {
+
         this.ticketRetrivalRate = ticketRetrivalRate;
     }
 
     public int getCustomerRetrivalRate() {
+
         return customerRetrivalRate;
     }
 
     public void setCustomerRetrivalRate(int customerRetrivalRate) {
+
         this.customerRetrivalRate = customerRetrivalRate;
     }
 
     // The TicketRepository is injected into the TicketService (To get the TicketRepository bean)
     @Autowired
     public TicketService(TicketRepository ticketRepository) {
+
         this.ticketRepository = ticketRepository;
     }
 
@@ -155,11 +160,5 @@ public class TicketService {
         System.out.println("The list is empty");
         return null;
     }
-
-
-
-
-
-
 
 }

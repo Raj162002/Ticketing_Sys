@@ -14,8 +14,8 @@ public class Vendor {
     private String vendorPassword;
     private String vendorName;
     private String vendorEmail;
-    private String vendorContactNumber;
-    public Vendor(String vendorName, String vendorEmail, String vendorContactNumber, String vendorPassword){
+    private Long vendorContactNumber;
+    public Vendor(String vendorName, String vendorEmail, Long vendorContactNumber, String vendorPassword){
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
         this.vendorContactNumber = vendorContactNumber;

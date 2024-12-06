@@ -25,7 +25,7 @@ import java.util.Scanner;
 
 public class Cli {
 
-    private static final String CONFIG_FILE_PATH = "config.json";
+    private static final String CONFIG_FILE_PATH = "simulation_config.json";
 
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext context = SpringApplication.run(RajApplication.class);
@@ -80,7 +80,7 @@ public class Cli {
 
         // Simulate vendor threads
         for (int i = 0; i < config.getVendorCount(); i++) {
-            Vendor vendor = new Vendor("Simulator Vendor " + i, "Test@gmail.com", "0771234567", "1234");
+            Vendor vendor = new Vendor("Simulator Vendor " + i, "Test@gmail.com", 0771234567L, "1234");
             VendorThreaded vendorThreaded = new VendorThreaded(vendor, vendorService, event, config.getTotalTickets(), ticketService);
             Thread t1 = new Thread(vendorThreaded);
             t1.setName("Vendor Thread " + i);
