@@ -4,10 +4,7 @@ import cli.Config;
 import com.google.gson.Gson;
 import iit.lk.raj.model.*;
 import iit.lk.raj.model.multithreaded.*;
-import iit.lk.raj.service.CustomerService;
-import iit.lk.raj.service.EventService;
-import iit.lk.raj.service.TicketService;
-import iit.lk.raj.service.VendorService;
+import iit.lk.raj.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping(value = "/ticket")
 public class TicketController {
     List<Thread> vendorThreadeds = new ArrayList<>();
@@ -31,8 +29,8 @@ public class TicketController {
     public String startSimulation(@RequestBody Config config) {
         try {
             // Trigger simulation logic
-            runSimulation(config);
-            return "Simulation started successfully!";
+            String msg = runSimulation(config);
+            return "Simulation started successfully!" + msg;
         } catch (Exception e) {
             e.printStackTrace();
             return "Error starting simulation: " + e.getMessage();
@@ -65,7 +63,7 @@ public class TicketController {
         // Simulate customer threads (total tickets * vendor count)
         for (int i = 0; i < config.getTotalTickets() * config.getVendorCount(); i++) {
             Customer customer = new Customer("Simulator Customer " + i, "TestM@gmail.com", 23L, "1234");
-            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, context.getBean(CustomerService.class));
+            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, context.getBean(CustomerService.class), event);
             Thread customerThread = new Thread(customerThreaded);
             customerThread.setName("Customer Thread " + i);
             customerThreadeds.add(customerThread);
@@ -80,16 +78,12 @@ public class TicketController {
     @PostMapping(value = "/stop")
     public String stopSimulation() {
         for (Thread t1 : vendorThreadeds) {
-            if (t1.isAlive()) {
-                t1.interrupt();
-            }
+            t1.interrupt();
         }
         for (Thread t2 : customerThreadeds) {
-            if (t2.isAlive()) {
-                t2.interrupt();
-            }
+            t2.interrupt();
         }
-        return "Simulation stopped successfully!";
+        return "Simulation stopping process has started!";
     }
 
     private static void saveConfigToFile(Config config) {
@@ -103,33 +97,28 @@ public class TicketController {
         }
     }
 
-//    private final TicketService ticketService;
-//    private final CustomerService customerService;
-//
-//    @Autowired
-//    public TicketController(TicketService ticketService, CustomerService customerService) {
-//        this.ticketService = ticketService;
-//        this.customerService = customerService;
-//    }
-//
-//    @GetMapping(value = "/test")
-//    public String test() {
-//        return "API works correctly";
-//    }
-//
-//    @PostMapping(value = "/addTicket")
-//    public ResponseEntity<Ticket> addTicket(@RequestBody Customer customer){
-//        Customer savedCustomer = customerService.createCustomer(customer);
-//        Ticket newTicket = new Ticket(customer, TicketType.VIP);
-//        Ticket savedTicket = ticketService.createTicket(newTicket);
-//        return ResponseEntity.ok(savedTicket);
-//    }
-//
-//    public TicketService getTicketService() {
-//        return ticketService;
-//    }
-//
-//    public CustomerService getCustomerService() {
-//        return customerService;
-//    }
+    @PostMapping(value = "/addTicket")
+    public ResponseEntity<String> addTicket(@RequestBody TicketRequest ticketRequest) {
+        TicketService ticketService = context.getBean(TicketService.class);
+        Event event= ticketRequest.getEvent();
+        event = context.getBean(EventService.class).createEvent(event);
+        VendorThreaded vendorThreaded = new VendorThreaded(ticketRequest.getVendor(), context.getBean(VendorService.class), event, ticketRequest.getTicketCount(), ticketService);
+        Thread t1 = new Thread(vendorThreaded);
+        t1.setName("Vendor Thread " + ticketRequest.getVendor().getVendorName());
+        t1.start();
+        return ResponseEntity.ok("Ticket creation process started successfully!");
+    }
+
+    @PostMapping(value="/buyTicket")
+    public ResponseEntity<String> buyTicket(@RequestBody Customer customer, Long eventId){
+        TicketService ticketService = context.getBean(TicketService.class);
+        EventService eventService = context.getBean(EventService.class);
+        Event event = eventService.getEventById(eventId);
+        event=eventService.createEvent(event);
+        CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, context.getBean(CustomerService.class), event);
+        Thread t2 = new Thread(customerThreaded);
+        t2.setName("Customer Thread " + customer.getCustomerName());
+        return ResponseEntity.ok("Ticket buying process started successfully!");
+    }
+
 }

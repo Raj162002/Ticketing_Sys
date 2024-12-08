@@ -10,7 +10,6 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,36 +17,22 @@ public class Event {
     private String eventName;
     private String eventLocation;
     private Date eventDate;
-    private String eventStartTime;
-    private String eventEndTime;
-    private long eventTicketCount;
+    private int eventTicketCount=0;
     private double eventTicketPrice;
-    private double eventVIPPrice;
-    private Date eventTicketReleaseDate;
-    private Date eventTicketClosingDate;
-    private boolean eventStatus;
-    private long eventTotalTickets;
-    public Event(String eventName, String eventLocation, Date eventDate, String eventStartTime, String eventEndTime, long eventTicketCount, double eventTicketPrice, double eventVIPPrice, Date eventTicketReleaseDate, Date eventTicketClosingDate, long eventTotalTickets) {
+    private long eventTotalTicketsVendor;
+    public Event(String eventName, String eventLocation, Date eventDate, double eventTicketPrice,  long eventTotalTickets) {
         this.eventName = eventName;
         this.eventLocation = eventLocation;
         this.eventDate = eventDate;
-        this.eventStartTime = eventStartTime;
-        this.eventEndTime = eventEndTime;
-        this.eventTicketCount = eventTicketCount;
         this.eventTicketPrice = eventTicketPrice;
-        this.eventVIPPrice = eventVIPPrice;
-        this.eventTicketReleaseDate = eventTicketReleaseDate;
-        this.eventTicketClosingDate = eventTicketClosingDate;
-        this.eventTotalTickets = eventTotalTickets;
+        this.eventTotalTicketsVendor = eventTotalTickets;
     }
     //The Constructor that is going to be used for the simulation
     public Event (String eventName,long eventTotalTickets,double eventTicketPrice){
         this.eventName = eventName;
-        this.eventTotalTickets = eventTotalTickets;
+        this.eventTotalTicketsVendor = eventTotalTickets;
         this.eventTicketPrice = eventTicketPrice;
+
     }
-    @ManyToOne
-    @JoinColumn(name = "vendorId")
-    private Vendor vendor;
 
 }

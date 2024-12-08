@@ -11,6 +11,7 @@ public class VendorThreaded extends Vendor implements Runnable {
     private Vendor vendor;
     final private VendorService vendorService;
     final private TicketService ticketService;
+    private boolean threadRunning = true;
     public VendorThreaded(String vendorName, VendorService vendorService, TicketService ticketService) {
         super(vendorName);
         this.vendorService = vendorService;
@@ -41,11 +42,29 @@ public class VendorThreaded extends Vendor implements Runnable {
         this.ticketCount=ticketCount;
         this.ticketService = ticketService;
     }
+
+    public boolean isThreadRunning() {
+        return threadRunning;
+    }
+
+    public void setThreadRunning(boolean threadRunning) {
+        this.threadRunning = threadRunning;
+    }
+
     @Override
     public void run() {
-//        System.out.println("Vendor " + this.getVendorName() + " is trying to add an event");
-        System.out.println("The name of the thread is: " + Thread.currentThread().getName());
-        ticketService.addTickets(ticketCount, event,vendor);
+        while(threadRunning){
+            try{
+                //        System.out.println("Vendor " + this.getVendorName() + " is trying to add an event");
+                System.out.println("The name of the thread is: " + Thread.currentThread().getName());
+                ticketService.addTickets(ticketCount, event,vendor);
+                break;
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println(Thread.currentThread().getName()+" has stopped");
+
 
     }
 }

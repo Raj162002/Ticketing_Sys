@@ -92,7 +92,7 @@ public class Cli {
         // Simulate customer threads
         for (int i = 0; i < config.getTotalTickets() * config.getVendorCount(); i++) {
             Customer customer = new Customer("Simulator Customer " + i, "TestM@gmail.com", 23L, "1234");
-            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, customerService);
+            CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, customerService,event);
             Thread t2 = new Thread(customerThreaded);
             t2.setName("Customer Thread " + i);
             customerThreads.add(t2);

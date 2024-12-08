@@ -2,7 +2,7 @@ package cli;
 
 public class Config {
 
-    private int totalTickets;
+    private int totalTicketsVendor;
     private String eventName;
     private double ticketPrice;
     private int vendorCount;
@@ -10,9 +10,9 @@ public class Config {
     private int customerRetrivalRate;
 
     // Constructor
-    public Config(int totalTickets, String eventName, double ticketPrice,
+    public Config(int totalTicketsVendor, String eventName, double ticketPrice,
                   int vendorCount, int ticketRetrivalRate, int customerRetrivalRate) {
-        this.totalTickets = totalTickets;
+        this.totalTicketsVendor = totalTicketsVendor;
         this.eventName = eventName;
         this.ticketPrice = ticketPrice;
         this.vendorCount = vendorCount;
@@ -22,11 +22,11 @@ public class Config {
 
     // Getters and Setters
     public int getTotalTickets() {
-        return totalTickets;
+        return totalTicketsVendor;
     }
 
-    public void setTotalTickets(int totalTickets) {
-        this.totalTickets = totalTickets;
+    public void setTotalTickets(int totalTicketsVendor) {
+        this.totalTicketsVendor = totalTicketsVendor;
     }
 
     public String getEventName() {

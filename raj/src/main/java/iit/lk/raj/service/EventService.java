@@ -6,6 +6,8 @@ import iit.lk.raj.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class EventService {
@@ -33,6 +35,14 @@ public class EventService {
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
-    
+
+    public Event getEventById(Long eventId) {
+        Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isPresent()) {
+            return event.get();
+        } else {
+            throw new NoSuchElementException("Event not found with ID: " + eventId);
+        }
+    }
 
 }

@@ -7,8 +7,10 @@ import iit.lk.raj.model.Ticket;
 import iit.lk.raj.model.Vendor;
 import iit.lk.raj.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
@@ -23,6 +25,10 @@ public class TicketService {
     private final Lock ticketLock = new ReentrantLock();
     private int customerRetrivalRate;
     private int ticketRetrivalRate;
+    @Autowired
+    private TicketUpdateService ticketUpdateService;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public int getTicketRetrivalRate() {
 
@@ -55,11 +61,21 @@ public class TicketService {
 
         return ticketRepository.save(ticket);
     }
-    public synchronized void addTickets(int ticketCount, Event event, Vendor vendor){
+    public synchronized List<Ticket> addTickets(int ticketCount, Event event, Vendor vendor){
+        List<Ticket> ticketList=new ArrayList<>();
+        if(Thread.currentThread().isInterrupted()){
+            System.out.println("The thread "+Thread.currentThread().getName()+" is interrupted");
+            notifyAll();
+            return null;
+        }
         for(int i=0; i<ticketCount; i++){
             try{
+                EventService eventService= applicationContext.getBean(EventService.class);
                 Ticket ticket=new Ticket(event,vendor);
                 createTicket(ticket);
+                ticketList.add(ticket);
+                event.setEventTicketCount(event.getEventTicketCount()+1);
+                eventService.createEvent(event);
                 System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
 
                 try {
@@ -75,14 +91,20 @@ public class TicketService {
 
         }
         System.out.println("Tickets added successfully"+" For the thread: "+Thread.currentThread().getName());
+        return ticketList;
 
     }
 
-    public synchronized void buyTicket(Customer customer){
+    public synchronized void buyTicket(Customer customer,Long eventId){
+        if(Thread.currentThread().isInterrupted()){
+            System.out.println("The thread "+Thread.currentThread().getName()+" is interrupted");
+            notifyAll();
+            return;
+        }
         try{
             Ticket tempTicket=null;
             System.out.println("The name of the thread is: "+Thread.currentThread().getName());
-            tempTicket=findFirstTicketWithFalseStatus();
+            tempTicket=findFirstTicketWithFalseStatus(eventId);
             while(tempTicket==null){
                 System.out.println("No tickets available at buy ticket");
                 try {
@@ -92,11 +114,16 @@ public class TicketService {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e.getMessage());
                 }
-                tempTicket=findFirstTicketWithFalseStatus();
+                tempTicket=findFirstTicketWithFalseStatus(eventId);
             }
             tempTicket.setTicketStatus(true);
             tempTicket.setCustomer(customer);
             ticketRepository.save(tempTicket);
+            EventService eventService= applicationContext.getBean(EventService.class);
+            Event event=eventService.getEventById(eventId);
+            event.setEventTicketCount(event.getEventTicketCount()-1);
+            eventService.createEvent(event);
+            ticketUpdateService.sendAllTicketsForEvent(eventId);
             try {
                 Thread.currentThread().sleep(customerRetrivalRate*1000);
             } catch (InterruptedException e) {
@@ -148,8 +175,8 @@ public class TicketService {
         }
     }
 
-    public synchronized Ticket findFirstTicketWithFalseStatus() throws Exception {
-        List<Ticket> falseticketList = ticketRepository.findByTicketStatusFalse();
+    public synchronized Ticket findFirstTicketWithFalseStatus(Long eventId) throws Exception {
+        List<Ticket> falseticketList = ticketRepository.findByTicketStatusFalseAndEventId(eventId);
         System.out.println("The list is going to be printed in "+Thread.currentThread().getName());
         if(!falseticketList.isEmpty()){
             for (Ticket ticket : falseticketList) {
