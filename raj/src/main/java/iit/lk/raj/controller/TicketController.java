@@ -4,9 +4,11 @@ import cli.Config;
 import com.google.gson.Gson;
 import iit.lk.raj.model.*;
 import iit.lk.raj.model.multithreaded.*;
+import iit.lk.raj.repository.TicketRepository;
 import iit.lk.raj.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 @RequestMapping(value = "/ticket")
 public class TicketController {
     List<Thread> vendorThreadeds = new ArrayList<>();
@@ -24,6 +26,10 @@ public class TicketController {
     private static final String configFilePath = "GUI_simulation_config.json";
     @Autowired
     private ApplicationContext context;
+    @Autowired
+    private TicketService ticketService;
+    @Autowired
+    private TicketRepository ticketRepository;
 
     @PostMapping("/start")
     public String startSimulation(@RequestBody Config config) {
@@ -83,6 +89,20 @@ public class TicketController {
         for (Thread t2 : customerThreadeds) {
             t2.interrupt();
         }
+        for (Thread t1 : vendorThreadeds) {
+            try {
+                t1.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Thread t2 : customerThreadeds) {
+            try {
+                t2.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return "Simulation stopping process has started!";
     }
 
@@ -109,16 +129,44 @@ public class TicketController {
         return ResponseEntity.ok("Ticket creation process started successfully!");
     }
 
-    @PostMapping(value="/buyTicket")
-    public ResponseEntity<String> buyTicket(@RequestBody Customer customer, Long eventId){
-        TicketService ticketService = context.getBean(TicketService.class);
-        EventService eventService = context.getBean(EventService.class);
-        Event event = eventService.getEventById(eventId);
-        event=eventService.createEvent(event);
-        CustomerThreaded customerThreaded = new CustomerThreaded(ticketService, customer, context.getBean(CustomerService.class), event);
-        Thread t2 = new Thread(customerThreaded);
-        t2.setName("Customer Thread " + customer.getCustomerName());
-        return ResponseEntity.ok("Ticket buying process started successfully!");
+    @PostMapping(value = "/buyTicket")
+    public ResponseEntity<String> buyTicket(@RequestBody Customer customer, @RequestParam Long eventId) {
+        try {
+            TicketService ticketService = context.getBean(TicketService.class);
+            EventService eventService = context.getBean(EventService.class);
+
+            // Retrieve the event using the provided eventId
+            Event event = eventService.getEventById(eventId);
+            if (event == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found!");
+            }
+
+            // Process the event (optional if needed)
+            event = eventService.createEvent(event);
+
+            // Create and start a new thread for the ticket buying process
+            CustomerThreaded customerThreaded = new CustomerThreaded(
+                    ticketService,
+                    customer,
+                    context.getBean(CustomerService.class),
+                    event
+            );
+            Thread t2 = new Thread(customerThreaded);
+            t2.setName("Customer Thread " + customer.getCustomerName());
+            t2.start();
+
+            return ResponseEntity.ok("Ticket buying process started successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while buying the ticket.");
+        }
+    }
+
+
+    @GetMapping("/getAvailableTickets")
+    public ResponseEntity<List<Ticket>> getAvailableTickets(@RequestHeader("eventId") long eventId) throws Exception {
+        List<Ticket> availableTickets = ticketRepository.findByTicketStatusFalseAndEventId(eventId);
+        return ResponseEntity.ok(availableTickets);
     }
 
 }

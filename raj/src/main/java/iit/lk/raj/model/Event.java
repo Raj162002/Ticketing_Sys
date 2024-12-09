@@ -17,7 +17,6 @@ public class Event {
     private String eventName;
     private String eventLocation;
     private Date eventDate;
-    private int eventTicketCount=0;
     private double eventTicketPrice;
     private long eventTotalTicketsVendor;
     public Event(String eventName, String eventLocation, Date eventDate, double eventTicketPrice,  long eventTotalTickets) {

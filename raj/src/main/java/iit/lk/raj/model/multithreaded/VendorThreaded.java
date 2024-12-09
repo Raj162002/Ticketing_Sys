@@ -5,6 +5,8 @@ import iit.lk.raj.model.Vendor;
 import iit.lk.raj.service.TicketService;
 import iit.lk.raj.service.VendorService;
 
+import java.util.logging.Logger;
+
 public class VendorThreaded extends Vendor implements Runnable {
     private Event event;
     private int ticketCount;
@@ -12,6 +14,7 @@ public class VendorThreaded extends Vendor implements Runnable {
     final private VendorService vendorService;
     final private TicketService ticketService;
     private boolean threadRunning = true;
+    Logger logger = Logger.getLogger(VendorThreaded.class.getName());
     public VendorThreaded(String vendorName, VendorService vendorService, TicketService ticketService) {
         super(vendorName);
         this.vendorService = vendorService;
@@ -56,7 +59,8 @@ public class VendorThreaded extends Vendor implements Runnable {
         while(threadRunning){
             try{
                 //        System.out.println("Vendor " + this.getVendorName() + " is trying to add an event");
-                System.out.println("The name of the thread is: " + Thread.currentThread().getName());
+//                System.out.println("The name of the thread is: " + Thread.currentThread().getName());
+                logger.info("The name of the thread is: " + Thread.currentThread().getName());
                 ticketService.addTickets(ticketCount, event,vendor);
                 break;
             }catch(Exception e){

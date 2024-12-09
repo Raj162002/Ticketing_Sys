@@ -4,6 +4,7 @@ import iit.lk.raj.model.Customer;
 import iit.lk.raj.model.Event;
 import iit.lk.raj.service.CustomerService;
 import iit.lk.raj.service.TicketService;
+import java.util.logging.Logger;
 
 public class CustomerThreaded extends Customer implements Runnable{
     final private TicketService ticketService;
@@ -11,6 +12,8 @@ public class CustomerThreaded extends Customer implements Runnable{
     final private CustomerService customerService;
     private boolean threadRunning = true;
     private Event event;
+    Logger logger = Logger.getLogger(CustomerThreaded.class.getName());
+
     public CustomerThreaded(String customerName, String customerEmail, Long customerContactNumber, String customerPassword, TicketService ticketService, CustomerService customerService) {
         super(customerName, customerEmail, customerContactNumber, customerPassword);
         this.ticketService = ticketService;
@@ -54,14 +57,16 @@ public class CustomerThreaded extends Customer implements Runnable{
     public void run(){
         while (threadRunning){
             try {
-                System.out.println("Customer "+this.getCustomerName()+" is trying to buy a ticket");
+//                System.out.println("Customer "+this.getCustomerName()+" is trying to buy a ticket");
+                logger.info("Customer "+this.getCustomerName()+" is trying to buy a ticket");
                 ticketService.buyTicket(customer,event.getEventId());
                 break;
             }catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println(Thread.currentThread().getName()+" has stopped");
+//        System.out.println(Thread.currentThread().getName()+" has stopped");
+        logger.info(Thread.currentThread().getName()+" has stopped");
 
     }
 }
