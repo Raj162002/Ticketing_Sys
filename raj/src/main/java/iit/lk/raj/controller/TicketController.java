@@ -17,6 +17,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ This is the controller for Ticket where the API calls are handles
+ It uses the TicketService class to execute the commands
+*/
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/ticket")
@@ -31,6 +36,7 @@ public class TicketController {
     @Autowired
     private TicketRepository ticketRepository;
 
+    //This method will start the multi threading simulation process similar to the CLI
     @PostMapping("/start")
     public String startSimulation(@RequestBody Config config) {
         try {
@@ -43,6 +49,7 @@ public class TicketController {
         }
     }
 
+    //This is the multi threading simulation method
     private String runSimulation(Config config) throws InterruptedException {
         saveConfigToFile(config);
         // Simulate the event setup using the provided configuration
@@ -76,11 +83,9 @@ public class TicketController {
             customerThread.start();
         }
         return "All threads have been started successfully!";
-
-        // Wait for threads to finish (join threads)
-        // In a real-world scenario, you would handle this more gracefully, possibly with a thread pool
     }
 
+    //This method will stop the multi threading simulation process
     @PostMapping(value = "/stop")
     public String stopSimulation() {
         for (Thread t1 : vendorThreadeds) {
@@ -106,6 +111,7 @@ public class TicketController {
         return "Simulation stopping process has started!";
     }
 
+    //This method will save the configuration to a JSON file unlike the CLI this won't load the config file
     private static void saveConfigToFile(Config config) {
         Gson gson = new Gson();
         try (FileWriter writer = new FileWriter(configFilePath)) {
@@ -117,6 +123,10 @@ public class TicketController {
         }
     }
 
+    /*This method will add a single ticket to the system using a vendor
+    TicketRequest object class was made since there is a int total ticket was giving an error when sended from
+    the front end. This is a workaround for that
+     */
     @PostMapping(value = "/addTicket")
     public ResponseEntity<String> addTicket(@RequestBody TicketRequest ticketRequest) {
         TicketService ticketService = context.getBean(TicketService.class);
@@ -129,6 +139,9 @@ public class TicketController {
         return ResponseEntity.ok("Ticket creation process started successfully!");
     }
 
+    /*
+    This method will buy a ticket for a customer using the event id and the customer object.
+     */
     @PostMapping(value = "/buyTicket")
     public ResponseEntity<String> buyTicket(@RequestBody Customer customer, @RequestParam Long eventId) {
         try {
@@ -162,7 +175,9 @@ public class TicketController {
         }
     }
 
-
+    /*This method will return all the tickets that are available for a specific event from the database
+     (the tickets with status false are available)
+     */
     @GetMapping("/getAvailableTickets")
     public ResponseEntity<List<Ticket>> getAvailableTickets(@RequestHeader("eventId") long eventId) throws Exception {
         List<Ticket> availableTickets = ticketRepository.findByTicketStatusFalseAndEventId(eventId);

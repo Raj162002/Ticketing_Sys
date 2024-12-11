@@ -6,6 +6,12 @@ import iit.lk.raj.service.CustomerService;
 import iit.lk.raj.service.TicketService;
 import java.util.logging.Logger;
 
+/*
+This is the Customer entity thread class
+The reason this was made because when the customer class is extended to thread or implements thread
+the run method must be overridden but if it was done in a database class it gave a error
+for the new threaded class was made extends the entity class and implemented runnable
+ */
 public class CustomerThreaded extends Customer implements Runnable{
     final private TicketService ticketService;
     private Customer customer;
@@ -29,6 +35,7 @@ public class CustomerThreaded extends Customer implements Runnable{
         this.customerService.createCustomer(customer);
     }
 
+    //Even though LomBok was imported using that was causing some errors due to that it was not used
     public boolean isThreadRunning() {
         return threadRunning;
     }
@@ -53,20 +60,18 @@ public class CustomerThreaded extends Customer implements Runnable{
         this.event = event;
     }
 
+    /*
+    This is the method called when the thread.start() is called
+    it uses the ticket service class which acts as a ticketpool and buyTicket() is synchronized
+     */
     @Override
     public void run(){
-        while (threadRunning){
             try {
-//                System.out.println("Customer "+this.getCustomerName()+" is trying to buy a ticket");
                 logger.info("Customer "+this.getCustomerName()+" is trying to buy a ticket");
                 ticketService.buyTicket(customer,event.getEventId());
-                break;
             }catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-//        System.out.println(Thread.currentThread().getName()+" has stopped");
-        logger.info(Thread.currentThread().getName()+" has stopped");
 
     }
 }

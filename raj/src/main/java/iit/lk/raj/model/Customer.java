@@ -31,11 +31,6 @@ public class Customer{
     private String customerPassword;
 
 
-
-    // One customer can have multiple tickets
-//    @OneToMany(mappedBy = "customer")
-//    private List<Ticket> tickets;
-
     public Customer(String customerName, String customerEmail, Long customerContactNumber, String customerPassword) {
         this.customerName = customerName;
         this.customerEmail = customerEmail;

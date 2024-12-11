@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +20,6 @@ import java.util.logging.Logger;
 public class TicketService {
     private final TicketRepository ticketRepository;
     private static final Logger logger = Logger.getLogger(TicketService.class.getName());
-    private final Lock ticketLock = new ReentrantLock();
     private int customerRetrivalRate;
     private int ticketRetrivalRate;
     @Autowired
@@ -63,7 +60,6 @@ public class TicketService {
         List<Ticket> ticketList=new ArrayList<>();
         if(Thread.currentThread().isInterrupted()){
             logger.info("The thread "+Thread.currentThread().getName()+" is interrupted");
-//            System.out.println("The thread "+Thread.currentThread().getName()+" is interrupted");
             notifyAll();
             return null;
         }
@@ -73,7 +69,6 @@ public class TicketService {
                 createTicket(ticket);
                 ticketList.add(ticket);
                 logger.info("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
-//                System.out.println("The ticket"+i+"for the thread "+Thread.currentThread().getName()+" has been added");
 
                 try {
                     Thread.currentThread().sleep(ticketRetrivalRate*1000);
@@ -83,13 +78,10 @@ public class TicketService {
                 notifyAll();
             }catch(Exception e){
                 logger.warning("Error in adding tickets");
-//                System.out.println("Error in adding tickets");
                 logger.warning(e.getMessage());
-//                System.out.println(e);
             }
 
         }
-//        System.out.println("Tickets added successfully"+" For the thread: "+Thread.currentThread().getName());
         logger.info("Tickets added successfully"+" For the thread: "+Thread.currentThread().getName());
 
         return ticketList;
@@ -99,23 +91,23 @@ public class TicketService {
     public synchronized void buyTicket(Customer customer,Long eventId){
         if(Thread.currentThread().isInterrupted()){
             logger.info("The thread "+Thread.currentThread().getName()+" is interrupted");
-//            System.out.println("The thread "+Thread.currentThread().getName()+" is interrupted");
             notifyAll();
             return;
         }
         try{
             Ticket tempTicket=null;
-//            System.out.println("The name of the thread is: "+Thread.currentThread().getName());
             logger.info("The name of the thread is: "+Thread.currentThread().getName());
             tempTicket=findFirstTicketWithFalseStatus(eventId);
             while(tempTicket==null){
-//                System.out.println("No tickets available at buy ticket");
                 logger.info("No tickets available at buy ticket");
                 try {
-//                    System.out.println("The thread is going to wait");
                     logger.info("The thread is going to wait");
                     wait();
-//                    System.out.println("The thread is out of waiting");
+                    if(Thread.currentThread().isInterrupted()){
+                        logger.info("The thread "+Thread.currentThread().getName()+" is interrupted");
+                        notifyAll();
+                        return;
+                    }
                     logger.info("The thread is out of waiting");
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e.getMessage());
@@ -130,13 +122,11 @@ public class TicketService {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-//            System.out.println("Ticket with id "+tempTicket.getTicketId()+" has been bought by "+Thread.currentThread().getName());
             logger.info("Ticket with id "+tempTicket.getTicketId()+" has been bought by "+Thread.currentThread().getName());
         }catch(Exception e){
             logger.warning("Error in buying ticket");
-//            System.out.println("Error in buying ticket");
             logger.warning(e.getMessage());
-//            System.out.println(e);
+
 
         }
     }
@@ -181,11 +171,9 @@ public class TicketService {
 
     public synchronized Ticket findFirstTicketWithFalseStatus(Long eventId) throws Exception {
         List<Ticket> falseticketList = ticketRepository.findByTicketStatusFalseAndEventId(eventId);
-        System.out.println("The list is going to be printed in "+Thread.currentThread().getName());
         if(!falseticketList.isEmpty()){
             return falseticketList.get(0);
         }
-//        System.out.println("The list is empty");
         logger.info("The list is empty");
         return null;
     }

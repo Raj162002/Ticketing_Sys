@@ -1,5 +1,9 @@
 package cli;
 
+/*
+This is the Config class that is going to be used to update or load the json file
+*/
+
 public class Config {
 
     private int totalTicketsVendor;
@@ -9,7 +13,6 @@ public class Config {
     private int ticketRetrivalRate;
     private int customerRetrivalRate;
 
-    // Constructor
     public Config(int totalTicketsVendor, String eventName, double ticketPrice,
                   int vendorCount, int ticketRetrivalRate, int customerRetrivalRate) {
         this.totalTicketsVendor = totalTicketsVendor;
@@ -20,7 +23,7 @@ public class Config {
         this.customerRetrivalRate = customerRetrivalRate;
     }
 
-    // Getters and Setters
+
     public int getTotalTickets() {
         return totalTicketsVendor;
     }

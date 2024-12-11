@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/*
+This is the controller for Customer where api requests are made invoking the functions inside CustomerService
+*/
 @RestController
 @RequestMapping(value = "/customer")
 @CrossOrigin(origins = "*")

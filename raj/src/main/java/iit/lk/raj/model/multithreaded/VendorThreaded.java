@@ -7,19 +7,29 @@ import iit.lk.raj.service.VendorService;
 
 import java.util.logging.Logger;
 
+/*
+This is the Vendor entity thread class
+The reason this was made because when the customer class is extended to thread or implements thread
+the run method must be overridden but if it was done in a database class it gave a error
+for the new threaded class was made extends the entity class and implemented runnable
+ */
+
 public class VendorThreaded extends Vendor implements Runnable {
     private Event event;
     private int ticketCount;
     private Vendor vendor;
     final private VendorService vendorService;
     final private TicketService ticketService;
-    private boolean threadRunning = true;
     Logger logger = Logger.getLogger(VendorThreaded.class.getName());
+
+
     public VendorThreaded(String vendorName, VendorService vendorService, TicketService ticketService) {
         super(vendorName);
         this.vendorService = vendorService;
         this.ticketService = ticketService;
     }
+
+
     public VendorThreaded(String vendorName, String vendorEmail, Long vendorContactNumber, String vendorPassword, VendorService vendorService, Event event, int ticketCount, TicketService ticketService) {
         super(vendorName, vendorEmail, vendorContactNumber, vendorPassword);
         this.vendorService = vendorService;
@@ -27,6 +37,8 @@ public class VendorThreaded extends Vendor implements Runnable {
         this.ticketCount=ticketCount;
         this.ticketService = ticketService;
     }
+
+    //Using this for multi thread simulation
     public VendorThreaded(Vendor vendor, VendorService vendorService, Event event, int ticketCount, TicketService ticketService) {
         super(vendor.getVendorName(), vendor.getVendorEmail(), vendor.getVendorContactNumber(), vendor.getVendorPassword());
         this.vendorService = vendorService;
@@ -37,7 +49,6 @@ public class VendorThreaded extends Vendor implements Runnable {
         vendorService.createVendor(vendor);
     }
 
-    //Using this for simulation
     public VendorThreaded(VendorService vendorService, Event event, int ticketCount, TicketService ticketService) {
         super();
         this.vendorService = vendorService;
@@ -46,27 +57,18 @@ public class VendorThreaded extends Vendor implements Runnable {
         this.ticketService = ticketService;
     }
 
-    public boolean isThreadRunning() {
-        return threadRunning;
-    }
-
-    public void setThreadRunning(boolean threadRunning) {
-        this.threadRunning = threadRunning;
-    }
-
+    /*
+    This is the method that invokes when thread.start() is called
+    it uses ticketService which acts as a ticket pool as mentioned in customer threaded class
+     */
     @Override
     public void run() {
-        while(threadRunning){
             try{
-                //        System.out.println("Vendor " + this.getVendorName() + " is trying to add an event");
-//                System.out.println("The name of the thread is: " + Thread.currentThread().getName());
                 logger.info("The name of the thread is: " + Thread.currentThread().getName());
                 ticketService.addTickets(ticketCount, event,vendor);
-                break;
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
-        }
         System.out.println(Thread.currentThread().getName()+" has stopped");
 
 
